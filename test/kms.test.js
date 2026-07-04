@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const cdk = require("aws-cdk-lib");
+const assertions_1 = require("aws-cdk-lib/assertions");
+const src_1 = require("../src");
+test('KMS Created', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    new src_1.KmsConstruct(stack, 'KMS', {
+        aliasName: 'alias/aws-varnika-dev-kms-001'
+    });
+    const template = assertions_1.Template.fromStack(stack);
+    template.resourceCountIs('AWS::KMS::Key', 1);
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoia21zLnRlc3QuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJrbXMudGVzdC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLG1DQUNtQjtBQUVuQix1REFHOEI7QUFFOUIsZ0NBR2M7QUFFZCxJQUFJLENBQ0osYUFBYSxFQUNiLEdBQUcsRUFBRTtJQUVMLE1BQU0sR0FBRyxHQUNULElBQUksR0FBRyxDQUFDLEdBQUcsRUFBRSxDQUFDO0lBRWQsTUFBTSxLQUFLLEdBQ1gsSUFBSSxHQUFHLENBQUMsS0FBSyxDQUFDLEdBQUcsQ0FBQyxDQUFDO0lBRW5CLElBQUksa0JBQVksQ0FDaEIsS0FBSyxFQUNMLEtBQUssRUFDTDtRQUNBLFNBQVMsRUFDVCwrQkFBK0I7S0FDOUIsQ0FDQSxDQUFDO0lBRUYsTUFBTSxRQUFRLEdBQ2QscUJBQVEsQ0FBQyxTQUFTLENBQUMsS0FBSyxDQUFDLENBQUM7SUFFMUIsUUFBUSxDQUFDLGVBQWUsQ0FDeEIsZUFBZSxFQUNmLENBQUMsQ0FDQSxDQUFDO0FBQ0YsQ0FBQyxDQUNBLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgKiBhcyBjZGtcclxuZnJvbSAnYXdzLWNkay1saWInO1xyXG5cclxuaW1wb3J0IHtcclxuVGVtcGxhdGVcclxufVxyXG5mcm9tICdhd3MtY2RrLWxpYi9hc3NlcnRpb25zJztcclxuXHJcbmltcG9ydCB7XHJcbkttc0NvbnN0cnVjdFxyXG59XHJcbmZyb20gJy4uL3NyYyc7XHJcblxyXG50ZXN0KFxyXG4nS01TIENyZWF0ZWQnLFxyXG4oKSA9PiB7XHJcblxyXG5jb25zdCBhcHAgPVxyXG5uZXcgY2RrLkFwcCgpO1xyXG5cclxuY29uc3Qgc3RhY2sgPVxyXG5uZXcgY2RrLlN0YWNrKGFwcCk7XHJcblxyXG5uZXcgS21zQ29uc3RydWN0KFxyXG5zdGFjayxcclxuJ0tNUycsXHJcbntcclxuYWxpYXNOYW1lOlxyXG4nYWxpYXMvYXdzLXZhcm5pa2EtZGV2LWttcy0wMDEnXHJcbn1cclxuKTtcclxuXHJcbmNvbnN0IHRlbXBsYXRlID1cclxuVGVtcGxhdGUuZnJvbVN0YWNrKHN0YWNrKTtcclxuXHJcbnRlbXBsYXRlLnJlc291cmNlQ291bnRJcyhcclxuJ0FXUzo6S01TOjpLZXknLFxyXG4xXHJcbik7XHJcbn1cclxuKTtcclxuIl19

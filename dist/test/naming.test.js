@@ -12,10 +12,10 @@ describe('NamingConstruct', () => {
             owner: 'CloudTeam',
             costCenter: 'CC1001',
             businessUnit: 'IT',
-            vpcCidr: '10.0.0.0/16',
+            vpcCidr: '10.10.0.0/16',
             instanceType: 't3.medium',
             mandatoryTags: {}
         });
-        expect(naming.generate('s3')).toBe('aws-varnika-dev-s3-001');
+        expect(naming.generate('vpc')).toBe('aws-varnika-dev-vpc');
     });
 });

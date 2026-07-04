@@ -8,16 +8,20 @@ export class NamingConstruct {
 
   public generate(
     resourceType: string,
-    sequence: string = '001'
+    suffix?: string
   ): string {
 
-    return [
+    const parts = [
       this.config.vendor,
       this.config.application,
       this.config.environment,
-      resourceType,
-      sequence
-    ].join('-').toLowerCase();
+      resourceType
+    ];
 
+    if (suffix) {
+      parts.push(suffix);
+    }
+
+    return parts.join('-').toLowerCase();
   }
 }

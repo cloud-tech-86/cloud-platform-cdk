@@ -6,14 +6,17 @@ class NamingConstruct {
     constructor(config) {
         this.config = config;
     }
-    generate(resourceType, sequence = '001') {
-        return [
+    generate(resourceType, suffix) {
+        const parts = [
             this.config.vendor,
             this.config.application,
             this.config.environment,
-            resourceType,
-            sequence
-        ].join('-').toLowerCase();
+            resourceType
+        ];
+        if (suffix) {
+            parts.push(suffix);
+        }
+        return parts.join('-').toLowerCase();
     }
 }
 exports.NamingConstruct = NamingConstruct;
