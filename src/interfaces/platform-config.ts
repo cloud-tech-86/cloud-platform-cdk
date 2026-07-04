@@ -21,4 +21,6 @@ vpcCidr: string;
 instanceType: string;
 
 mandatoryTags: Record<string, string>;
+
+roleArn: string;
 }

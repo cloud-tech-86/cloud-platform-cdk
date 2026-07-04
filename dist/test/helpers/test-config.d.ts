@@ -7,6 +7,7 @@ export declare const testConfig: {
     owner: string;
     costCenter: string;
     businessUnit: string;
+    roleArn: string;
     vpcCidr: string;
     instanceType: string;
     mandatoryTags: {};

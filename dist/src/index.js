@@ -24,3 +24,4 @@ __exportStar(require("./networking/security-group-construct"), exports);
 __exportStar(require("./networking/endpoint-construct"), exports);
 __exportStar(require("./compute/ec2-construct"), exports);
 __exportStar(require("./storage/s3-construct"), exports);
+__exportStar(require("./security/s3-readonly-policy-construct"), exports);

@@ -1,33 +1,33 @@
 import { NamingConstruct } from '../src';
 
-describe('NamingConstruct', () => {
+describe('Naming Construct', () => {
 
-  test('generate resource name', () => {
+  test('Generate Resource Name', () => {
 
     const naming = new NamingConstruct({
-
       vendor: 'aws',
       application: 'varnika',
       environment: 'dev',
 
-      accountId: '123456789012',
+      roleArn: 'arn:aws:iam::123456789012:role/PowerUserRole',
+
+      accountId: '111111111111',
       region: 'ap-south-1',
 
-      owner: 'CloudTeam',
-      costCenter: 'CC1001',
-      businessUnit: 'IT',
+      owner: 'platform-team',
+      costCenter: 'IT',
+      businessUnit: 'Engineering',
 
-      vpcCidr: '10.10.0.0/16',
-      instanceType: 't3.medium',
+      vpcCidr: '10.0.0.0/16',
+      instanceType: 't3.micro',
 
       mandatoryTags: {}
-
     });
 
     expect(
-      naming.generate('vpc')
+      naming.generate('s3')
     ).toBe(
-      'aws-varnika-dev-vpc'
+      'aws-varnika-dev-s3'
     );
 
   });
