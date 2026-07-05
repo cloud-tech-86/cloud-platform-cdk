@@ -9,6 +9,6 @@ export * from './networking/endpoint-construct';
 export * from './compute/ec2-construct';
 export * from './storage/s3-construct';
 export * from './security/s3-readonly-policy-construct';
-export * from './foundation/naming-construct';
+export * from './management/ssm-construct';
 
 

@@ -1,21 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const src_1 = require("../src");
-describe('NamingConstruct', () => {
-    test('generate resource name', () => {
+describe('Naming Construct', () => {
+    test('Generate Resource Name', () => {
         const naming = new src_1.NamingConstruct({
             vendor: 'aws',
             application: 'varnika',
             environment: 'dev',
-            accountId: '123456789012',
+            roleArn: 'arn:aws:iam::123456789012:role/PowerUserRole',
+            accountId: '111111111111',
             region: 'ap-south-1',
-            owner: 'CloudTeam',
-            costCenter: 'CC1001',
-            businessUnit: 'IT',
-            vpcCidr: '10.10.0.0/16',
-            instanceType: 't3.medium',
+            owner: 'platform-team',
+            costCenter: 'IT',
+            businessUnit: 'Engineering',
+            vpcCidr: '10.0.0.0/16',
+            instanceType: 't3.micro',
             mandatoryTags: {}
         });
-        expect(naming.generate('vpc')).toBe('aws-varnika-dev-vpc');
+        expect(naming.generate('s3')).toBe('aws-varnika-dev-s3');
     });
 });

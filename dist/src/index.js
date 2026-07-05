@@ -25,3 +25,4 @@ __exportStar(require("./networking/endpoint-construct"), exports);
 __exportStar(require("./compute/ec2-construct"), exports);
 __exportStar(require("./storage/s3-construct"), exports);
 __exportStar(require("./security/s3-readonly-policy-construct"), exports);
+__exportStar(require("./management/ssm-construct"), exports);
