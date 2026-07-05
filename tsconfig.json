@@ -5,28 +5,27 @@
     "moduleResolution": "node",
 
     "declaration": true,
-
     "strict": true,
 
     "esModuleInterop": true,
-
     "skipLibCheck": true,
 
     "forceConsistentCasingInFileNames": true,
 
     "outDir": "dist",
-
-    "rootDir": "."
+    "rootDir": "src"
   },
 
   "include": [
-    "src/**/*.ts",
-    "test/**/*.ts"
+    "src/**/*.ts"
   ],
 
   "exclude": [
     "node_modules",
     "dist",
-    "cdk.out"
+    "cdk.out",
+    "test",
+    "**/*.test.ts",
+    "**/*.spec.ts"
   ]
 }
