@@ -44,7 +44,7 @@ class S3Construct extends constructs_1.Construct {
     constructor(scope, id, props) {
         super(scope, id);
         const naming = new naming_construct_1.NamingConstruct(props.config);
-        const bucketName = naming.generate(resource_types_1.ResourceType.S3, props.bucketSuffix ?? 'data');
+        const bucketName = naming.generate(resource_types_1.ResourceType.S3, { suffix: props.bucketSuffix ?? 'data' });
         this.bucket = new s3.Bucket(this, 'Bucket', {
             bucketName,
             versioned: true,

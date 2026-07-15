@@ -30,7 +30,7 @@ export class S3Construct extends Construct {
 
     const bucketName = naming.generate(
       ResourceType.S3,
-      props.bucketSuffix ?? 'data'
+      { suffix: props.bucketSuffix ?? 'data' }
     );
 
     this.bucket = new s3.Bucket(

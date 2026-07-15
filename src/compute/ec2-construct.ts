@@ -1,21 +1,29 @@
 import { Construct } from 'constructs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Tags } from 'aws-cdk-lib';
 
 import { PlatformConfig } from '../interfaces/platform-config';
+import { Ec2Configuration } from '../interfaces/ec2-config';
+
 import { NamingConstruct } from '../foundation/naming-construct';
+import { TaggingConstruct } from '../foundation/tagging-construct';
+import { ConfigValidator } from '../foundation/config-validator';
+import { DEFAULT_EC2 } from '../foundation/defaults';
+
 import { ResourceType } from '../constants/resource-types';
 
 export interface Ec2ConstructProps {
 
-  config: PlatformConfig;
+  readonly config: PlatformConfig;
 
-  vpc: ec2.IVpc;
+  readonly ec2: Ec2Configuration;
 
-  securityGroup: ec2.ISecurityGroup;
+  readonly vpc: ec2.IVpc;
 
-  role: iam.IRole;
+  readonly securityGroup: ec2.ISecurityGroup;
+
+  readonly role: iam.IRole;
+
 }
 
 export class Ec2Construct extends Construct {
@@ -30,89 +38,166 @@ export class Ec2Construct extends Construct {
 
     super(scope, id);
 
-    const naming =
-      new NamingConstruct(
-        props.config
-      );
-
-    const instanceName =
-      naming.generate(
-        ResourceType.EC2,
-        'app'
-      );
-
-    this.instance =
-      new ec2.Instance(
-        this,
-        'Instance',
-        {
-
-          instanceName,
-
-          vpc:
-            props.vpc,
-
-          role:
-            props.role,
-
-          securityGroup:
-            props.securityGroup,
-
-          instanceType:
-            new ec2.InstanceType(
-              props.config.instanceType
-            ),
-
-          machineImage:
-            ec2.MachineImage.latestAmazonLinux2023(),
-
-          vpcSubnets: {
-            subnetType:
-              ec2.SubnetType.PRIVATE_WITH_EGRESS
-          },
-
-          detailedMonitoring:
-            true,
-
-          requireImdsv2:
-            true,
-
-          blockDevices: [
-            {
-              deviceName: '/dev/xvda',
-
-              volume:
-                ec2.BlockDeviceVolume.ebs(
-                  30,
-                  {
-                    encrypted: true,
-                    volumeType:
-                      ec2.EbsDeviceVolumeType.GP3
-                  }
-                )
-            }
-          ]
-        }
-      );
-
-    Tags.of(this.instance).add(
-      'Application',
-      props.config.application
+    //
+    // Validate configuration
+    //
+    ConfigValidator.validatePlatformConfig(
+      props.config
     );
 
-    Tags.of(this.instance).add(
-      'Environment',
-      props.config.environment
+    ConfigValidator.validateEc2Config(
+      props.ec2
     );
 
-    Tags.of(this.instance).add(
-      'Owner',
-      props.config.owner
+    //
+    // Resource Naming
+    //
+    const naming = new NamingConstruct(
+      props.config
     );
 
-    Tags.of(this.instance).add(
-      'CostCenter',
-      props.config.costCenter
+    const instanceName = naming.generate(
+      ResourceType.EC2,
+      {
+        // Ec2Configuration does not have `nameSuffix`; fall back to default
+        suffix: (props.ec2 as any).nameSuffix ?? 'app'
+      }
     );
+
+    //
+    // Root Volume
+    //
+    const blockDevices: ec2.BlockDevice[] = [
+
+      {
+
+        deviceName: '/dev/xvda',
+
+        volume: ec2.BlockDeviceVolume.ebs(
+
+          props.ec2.rootVolume.size ??
+            DEFAULT_EC2.ROOT_VOLUME_SIZE,
+
+          {
+
+            volumeType:
+              props.ec2.rootVolume.volumeType ??
+              DEFAULT_EC2.ROOT_VOLUME_TYPE,
+
+            encrypted:
+              props.ec2.rootVolume.encrypted ??
+              DEFAULT_EC2.ENCRYPTED,
+
+            deleteOnTermination:
+              props.ec2.rootVolume.deleteOnTermination ?? true
+
+          }
+
+        )
+
+      }
+
+    ];
+
+    //
+    // Additional EBS Volumes
+    //
+    props.ec2.dataVolumes?.forEach(volume => {
+
+      blockDevices.push({
+
+        deviceName: volume.deviceName,
+
+        volume: ec2.BlockDeviceVolume.ebs(
+
+          volume.size,
+
+          {
+
+            volumeType: volume.volumeType,
+
+            encrypted: volume.encrypted,
+
+            deleteOnTermination:
+              (volume as any).deleteOnTermination ?? true
+
+          }
+
+        )
+
+      });
+
+    });
+
+    //
+    // Create EC2 Instance
+    //
+    this.instance = new ec2.Instance(
+
+      this,
+
+      'Instance',
+
+      {
+
+        instanceName,
+
+        vpc: props.vpc,
+
+        role: props.role,
+
+        securityGroup: props.securityGroup,
+
+        instanceType:
+          new ec2.InstanceType(
+            props.ec2.instanceType
+          ),
+
+        //
+        // Version 2:
+        // Replace with AmiResolver.resolve(props.ec2)
+        //
+        machineImage:
+          ec2.MachineImage.latestAmazonLinux2023(),
+
+        vpcSubnets: {
+
+          subnetType:
+            ec2.SubnetType.PRIVATE_WITH_EGRESS
+
+        },
+
+        detailedMonitoring:
+          DEFAULT_EC2.DETAILED_MONITORING,
+
+        requireImdsv2:
+          DEFAULT_EC2.REQUIRE_IMDSV2,
+
+        blockDevices
+
+      }
+
+    );
+
+    //
+    // Apply Platform Tags
+    //
+    TaggingConstruct.applyTags(
+
+      this.instance,
+
+      props.config,
+
+      {
+
+        Name: instanceName,
+
+        ResourceType: 'EC2'
+
+      }
+
+    );
+
   }
+
 }

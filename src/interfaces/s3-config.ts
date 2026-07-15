@@ -9,6 +9,7 @@ export interface LifecycleRuleConfig {
 
 export interface S3Config {
   readonly bucketName?: string;
+  readonly bucketSuffix?: string;
   readonly versioned?: boolean;
   readonly encryptionEnabled?: boolean;
   readonly blockPublicAccess?: boolean;

@@ -1,47 +1,99 @@
+export type ResourceMode =
+  | 'CREATE'
+  | 'IMPORT';
+
 export type VpcSubnetType =
   | 'Public'
   | 'Private'
   | 'Isolated';
 
 export interface VpcSubnetConfig {
+
   readonly name: string;
+
   readonly cidrMask: number;
+
   readonly subnetType: VpcSubnetType;
+
   readonly routeTableName?: string;
+
   readonly reserved?: boolean;
+
 }
 
 export interface VpcFlowLogsConfig {
+
   readonly enabled: boolean;
+
   readonly retentionInDays?: number;
+
   readonly destination:
     | 'S3'
     | 'CloudWatchLogs'
     | 'Kinesis';
 
   readonly bucketName?: string;
+
   readonly logGroupName?: string;
+
   readonly iamRoleArn?: string;
+
 }
 
 export interface VpcEndpointConfig {
+
   readonly s3?: boolean;
+
   readonly dynamodb?: boolean;
+
   readonly ssm?: boolean;
+
   readonly ec2messages?: boolean;
+
   readonly ssmmessages?: boolean;
+
   readonly kms?: boolean;
+
   readonly cloudwatch?: boolean;
+
 }
 
 export interface VpcConfig {
-  readonly cidr: string;
-  readonly maxAzs: number;
-  readonly natGateways: number;
 
-  readonly subnetConfiguration: VpcSubnetConfig[];
+  /**
+   * CREATE = Create a new VPC
+   * IMPORT = Use an existing VPC
+   */
+  readonly mode: ResourceMode;
+
+  /**
+   * Required when mode = IMPORT
+   */
+  readonly vpcId?: string;
+
+  /**
+   * Optional lookup by name (future support)
+   */
+  readonly vpcName?: string;
+
+  /**
+   * Required when mode = CREATE
+   */
+  readonly cidr?: string;
+
+  /**
+   * Optional friendly name
+   */
+  readonly name?: string;
+
+  readonly maxAzs?: number;
+
+  readonly natGateways?: number;
+
+  readonly subnetConfiguration?: VpcSubnetConfig[];
 
   readonly enableDnsHostnames?: boolean;
+
   readonly enableDnsSupport?: boolean;
 
   readonly flowLogs?: VpcFlowLogsConfig;
@@ -53,4 +105,5 @@ export interface VpcConfig {
   readonly enableVpnGateway?: boolean;
 
   readonly tags?: Record<string, string>;
+
 }

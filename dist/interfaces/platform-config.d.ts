@@ -7,8 +7,5 @@ export interface PlatformConfig {
     owner: string;
     costCenter: string;
     businessUnit: string;
-    vpcCidr: string;
-    instanceType: string;
     mandatoryTags: Record<string, string>;
-    roleArn: string;
 }

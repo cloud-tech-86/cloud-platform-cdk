@@ -1,31 +1,21 @@
 import { Construct } from 'constructs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
+import { PlatformConfig } from '../interfaces/platform-config';
+import { SecurityGroupConfig } from '../interfaces/security-group-config';
+
+import { NamingConstruct } from '../foundation/naming-construct';
+import { TaggingConstruct } from '../foundation/tagging-construct';
+import { ConfigValidator } from '../foundation/config-validator';
+
+import { ResourceType } from '../constants/resource-types';
+
 export interface SecurityGroupConstructProps {
-  vpc: ec2.IVpc;
-  securityGroupName: string;
-}
 
-export class SecurityGroupConstruct extends Construct {
+  readonly config: PlatformConfig;
 
-  public readonly securityGroup: ec2.SecurityGroup;
+  readonly securityGroup: SecurityGroupConfig;
 
-  constructor(
-    scope: Construct,
-    id: string,
-    props: SecurityGroupConstructProps
-  ) {
+  readonly vpc: ec2.IVpc;
 
-    super(scope, id);
-
-    this.securityGroup = new ec2.SecurityGroup(
-      this,
-      'SecurityGroup',
-      {
-        vpc: props.vpc,
-        securityGroupName: props.securityGroupName,
-        allowAllOutbound: true
-      }
-    );
-  }
 }
