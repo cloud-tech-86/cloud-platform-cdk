@@ -1,11 +1,10 @@
 export declare enum ResourceType {
     VPC = "vpc",
-    SG = "sg",
+    SECURITY_GROUP = "sg",
     EC2 = "ec2",
     S3 = "s3",
     KMS = "kms",
-    ROLE = "role",
-    GLUE = "glue",
-    BUCKET = "bucket",
-    ENDPOINT = "endpoint"
+    IAM_ROLE = "role",
+    ENDPOINT = "endpoint",
+    SSM = "ssm"
 }

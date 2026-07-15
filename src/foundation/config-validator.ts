@@ -1,6 +1,7 @@
 import { PlatformConfig } from '../interfaces/platform-config';
 import { Ec2Configuration } from '../interfaces/ec2-config';
 import { VpcConfig } from '../interfaces/vpc-config';
+import { SecurityGroupConfig } from '../interfaces/security-group-config';
 
 export class ConfigValidator {
 
@@ -29,10 +30,7 @@ export class ConfigValidator {
     config: Ec2Configuration
   ): void {
 
-    this.validateRequired(
-      config.instanceType,
-      'instanceType'
-    );
+    this.validateRequired(config.instanceType, 'instanceType');
 
     if (config.rootVolume.size <= 0) {
 
@@ -107,6 +105,27 @@ export class ConfigValidator {
 
         throw new Error(
           'VpcConfig.vpcId or vpcName is required when mode is IMPORT.'
+        );
+
+      }
+
+    }
+
+  }
+
+  /**
+   * Validate Security Group configuration.
+   */
+  public static validateSecurityGroupConfig(
+    config: SecurityGroupConfig
+  ): void {
+
+    if (config.mode === 'IMPORT') {
+
+      if (!config.securityGroupId) {
+
+        throw new Error(
+          'securityGroupId is required when mode is IMPORT.'
         );
 
       }

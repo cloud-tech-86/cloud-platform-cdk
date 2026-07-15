@@ -21,3 +21,14 @@ export const DEFAULT_VPC = {
   ENABLE_DNS_SUPPORT: true,
   NAT_GATEWAYS: 1
 };
+
+
+export const DEFAULT_SECURITY_GROUP = {
+
+  DESCRIPTION: 'Managed by Cloud Platform CDK',
+
+  ALLOW_ALL_OUTBOUND: true,
+
+  DISABLE_INLINE_RULES: false
+
+};
