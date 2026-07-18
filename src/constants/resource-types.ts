@@ -1,19 +1,19 @@
 export enum ResourceType {
-
   VPC = 'vpc',
-
+  SUBNET = 'subnet',
   SECURITY_GROUP = 'sg',
-
   EC2 = 'ec2',
-
   S3 = 's3',
-
-  KMS = 'kms',
-
   IAM_ROLE = 'role',
-
+  KMS = 'kms',
   ENDPOINT = 'endpoint',
-
-  SSM = 'ssm'
-
+  ALB = 'alb',
+  TARGET_GROUP = 'tg',
+  LISTENER = 'listener',
+  LAMBDA = 'lambda',
+  RDS = 'rds',
+  EFS = 'efs',
+  SNS = 'sns',
+  SQS = 'sqs',
+  CLOUDFRONT = 'cf'
 }

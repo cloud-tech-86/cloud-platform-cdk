@@ -1,30 +1,25 @@
-import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+
+import { TestStack } from '../helpers/test-stack';
+
+import { mockPlatformConfig } from '../helpers/mock-platform-config';
+
+import { mockVpcConfig } from '../helpers/mock-vpc-config';
 
 import { VpcConstruct } from '../../src/networking/vpc-construct';
 
 describe('VpcConstruct', () => {
 
-  test('Creates VPC', () => {
+  test('should create a VPC', () => {
 
-    const app = new cdk.App();
-
-    const stack = new cdk.Stack(
-      app,
-      'TestStack'
-    );
+    const stack = new TestStack();
 
     new VpcConstruct(
       stack,
       'Vpc',
       {
-        vpcName:
-          'aws-varnika-dev-vpc',
-
-        cidr:
-          '10.10.0.0/16',
-
-        maxAzs: 2
+        config: mockPlatformConfig,
+        vpc: mockVpcConfig
       }
     );
 

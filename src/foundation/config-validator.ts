@@ -2,6 +2,8 @@ import { PlatformConfig } from '../interfaces/platform-config';
 import { Ec2Configuration } from '../interfaces/ec2-config';
 import { VpcConfig } from '../interfaces/vpc-config';
 import { SecurityGroupConfig } from '../interfaces/security-group-config';
+import { IamRoleConfig } from '../interfaces/iam-role-config';
+import { EndpointConfig } from '../interfaces/endpoint-config';
 
 export class ConfigValidator {
 
@@ -30,7 +32,10 @@ export class ConfigValidator {
     config: Ec2Configuration
   ): void {
 
-    this.validateRequired(config.instanceType, 'instanceType');
+    this.validateRequired(
+      config.instanceType,
+      'instanceType'
+    );
 
     if (config.rootVolume.size <= 0) {
 
@@ -135,6 +140,51 @@ export class ConfigValidator {
   }
 
   /**
+   * Validate IAM Role configuration.
+   */
+  public static validateIamRoleConfig(
+    config: IamRoleConfig
+  ): void {
+
+    if (config.mode === 'IMPORT') {
+
+      if (!config.roleArn && !config.roleName) {
+
+        throw new Error(
+          'Either roleArn or roleName must be specified when mode is IMPORT.'
+        );
+
+      }
+
+      return;
+
+    }
+
+    if (!config.assumedBy) {
+
+      throw new Error(
+        'assumedBy is required when mode is CREATE.'
+      );
+
+    }
+
+    if (
+      config.maxSessionDurationHours &&
+      (
+        config.maxSessionDurationHours < 1 ||
+        config.maxSessionDurationHours > 12
+      )
+    ) {
+
+      throw new Error(
+        'maxSessionDurationHours must be between 1 and 12.'
+      );
+
+    }
+
+  }
+
+   /**
    * Validate required fields.
    */
   private static validateRequired(
@@ -163,6 +213,38 @@ export class ConfigValidator {
       /^(\d{1,3}\.){3}\d{1,3}\/([0-9]|[12][0-9]|3[0-2])$/;
 
     return cidrRegex.test(cidr);
+
+  
+  }
+
+    /**
+   * Validate Endpoint configuration.
+   */
+  public static validateEndpointConfig(
+    config: EndpointConfig
+  ): void {
+
+    const hasEndpoint =
+      config.s3 ||
+      config.dynamodb ||
+      config.ssm ||
+      config.ec2messages ||
+      config.ssmmessages ||
+      config.kms ||
+      config.logs ||
+      config.monitoring ||
+      config.ecrApi ||
+      config.ecrDocker ||
+      config.secretsManager ||
+      config.sts;
+
+    if (!hasEndpoint) {
+
+      throw new Error(
+        'At least one endpoint must be enabled.'
+      );
+
+    }
 
   }
 

@@ -32,3 +32,29 @@ export const DEFAULT_SECURITY_GROUP = {
   DISABLE_INLINE_RULES: false
 
 };
+
+export const DEFAULT_IAM_ROLE = {
+
+  DESCRIPTION: 'Managed by Cloud Platform CDK',
+
+  PATH: '/',
+
+  MAX_SESSION_DURATION_HOURS: 1
+
+};
+
+export const DEFAULT_KMS = {
+
+  ENABLE_KEY_ROTATION: true,
+
+  PENDING_WINDOW_DAYS: 30,
+
+  DESCRIPTION: 'Managed by Cloud Platform CDK'
+
+};
+
+export const DEFAULT_ENDPOINT = {
+
+  PRIVATE_DNS_ENABLED: true
+
+};

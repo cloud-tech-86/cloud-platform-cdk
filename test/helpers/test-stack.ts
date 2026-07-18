@@ -1,10 +1,22 @@
 import * as cdk from 'aws-cdk-lib';
 
-export function createTestStack(): cdk.Stack {
-  const app = new cdk.App();
+export class TestStack extends cdk.Stack {
 
-  return new cdk.Stack(
-    app,
-    'TestStack'
-  );
+  constructor() {
+
+    const app = new cdk.App();
+
+    super(
+      app,
+      'TestStack',
+      {
+        env: {
+          account: '111111111111',
+          region: 'ap-south-1'
+        }
+      }
+    );
+
+  }
+
 }

@@ -1,19 +1,27 @@
-export interface EndpointConfiguration {
-    enableS3?: boolean;
-    enableDynamoDb?: boolean;
-    enableSsm?: boolean;
-    enableEc2Messages?: boolean;
-    enableSsmMessages?: boolean;
-    enableKms?: boolean;
-    enableLogs?: boolean;
-}
+export interface EndpointConfig {
 
-export const defaultEndpointConfiguration: EndpointConfiguration = {
-    enableS3: false,
-    enableDynamoDb: false,
-    enableSsm: false,
-    enableEc2Messages: false,
-    enableSsmMessages: false,
-    enableKms: false,
-    enableLogs: false,
-};
+  readonly s3?: boolean;
+
+  readonly dynamodb?: boolean;
+
+  readonly ssm?: boolean;
+
+  readonly ec2messages?: boolean;
+
+  readonly ssmmessages?: boolean;
+
+  readonly kms?: boolean;
+
+  readonly logs?: boolean;
+
+  readonly monitoring?: boolean;
+
+  readonly ecrApi?: boolean;
+
+  readonly ecrDocker?: boolean;
+
+  readonly secretsManager?: boolean;
+
+  readonly sts?: boolean;
+
+}
