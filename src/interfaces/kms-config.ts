@@ -1,34 +1,23 @@
-import * as kms from 'aws-cdk-lib/aws-kms';
-import { ResourceMode } from './common';
+export type KmsMode =
+  | 'AWS_MANAGED'
+  | 'IMPORT'
+  | 'CREATE'
+  | 'NONE';
 
 export interface KmsConfig {
 
-  readonly mode: ResourceMode;
+  readonly mode: KmsMode; // KMS mode
 
-  //
-  // IMPORT
-  //
-  readonly keyArn?: string;
+  readonly keyArn?: string; // Existing CMK ARN
 
-  readonly aliasName?: string;
+  readonly alias?: string; // Existing or new alias
 
-  //
-  // CREATE
-  //
-  readonly nameSuffix?: string;
+  readonly description?: string; // Key description
 
-  readonly description?: string;
+  readonly enableKeyRotation?: boolean; // Enable rotation
 
-  readonly enableKeyRotation?: boolean;
+  readonly deletionWindowInDays?: number; // 7-30 days
 
-  readonly pendingWindowDays?: number;
-
-  readonly removalPolicy?: 'DESTROY' | 'RETAIN';
-
-  readonly keySpec?: kms.KeySpec;
-
-  readonly keyUsage?: kms.KeyUsage;
-
-  readonly tags?: Record<string, string>;
+  readonly tags?: Record<string, string>; // Additional tags
 
 }

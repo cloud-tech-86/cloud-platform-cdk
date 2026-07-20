@@ -4,6 +4,7 @@ import { VpcConfig } from '../interfaces/vpc-config';
 import { SecurityGroupConfig } from '../interfaces/security-group-config';
 import { IamRoleConfig } from '../interfaces/iam-role-config';
 import { EndpointConfig } from '../interfaces/endpoint-config';
+import { KmsConfig } from '../interfaces/kms-config';
 
 export class ConfigValidator {
 
@@ -247,5 +248,44 @@ export class ConfigValidator {
     }
 
   }
+
+  /**
+ * Validate KMS configuration.
+ */
+public static validateKmsConfig(
+  config: KmsConfig
+): void {
+
+  //
+  // CREATE mode
+  //
+  if (config.mode === 'CREATE') {
+
+    if (!config.alias) {
+
+      throw new Error(
+        'alias is required when mode is CREATE.'
+      );
+
+    }
+
+  }
+
+  //
+  // IMPORT mode
+  //
+  if (config.mode === 'IMPORT') {
+
+    if (!config.keyArn && !config.alias) {
+
+      throw new Error(
+        'Either keyArn or alias is required when mode is IMPORT.'
+      );
+
+    }
+
+  }
+
+}
 
 }
