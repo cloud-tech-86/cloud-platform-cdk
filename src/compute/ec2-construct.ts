@@ -4,12 +4,10 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 
 import { PlatformConfig } from '../interfaces/platform-config';
 import { Ec2Configuration } from '../interfaces/ec2-config';
-
 import { NamingConstruct } from '../foundation/naming-construct';
 import { TaggingConstruct } from '../foundation/tagging-construct';
 import { ConfigValidator } from '../foundation/config-validator';
 import { DEFAULT_EC2 } from '../foundation/defaults';
-
 import { ResourceType } from '../constants/resource-types';
 
 export interface Ec2ConstructProps {
@@ -60,7 +58,9 @@ export class Ec2Construct extends Construct {
       ResourceType.EC2,
       {
         // Ec2Configuration does not have `nameSuffix`; fall back to default
-        suffix: (props.ec2 as any).nameSuffix ?? 'app'
+
+        suffix: props.ec2.nameSuffix ?? 'app'
+        
       }
     );
 
@@ -134,9 +134,7 @@ export class Ec2Construct extends Construct {
     //
     this.instance = new ec2.Instance(
 
-      this,
-
-      'Instance',
+      this,      'Instance',
 
       {
 
@@ -157,8 +155,10 @@ export class Ec2Construct extends Construct {
         // Version 2:
         // Replace with AmiResolver.resolve(props.ec2)
         //
-        machineImage:
-          ec2.MachineImage.latestAmazonLinux2023(),
+        machineImage: this.resolveMachineImage(
+          props.ec2,
+           props.config.region
+),
 
         vpcSubnets: {
 
@@ -200,4 +200,48 @@ export class Ec2Construct extends Construct {
 
   }
 
+  /**
+ * Resolve machine image from configuration.
+ */
+private resolveMachineImage(
+  config: Ec2Configuration,
+  region: string
+): ec2.IMachineImage {
+
+  //
+  // Specific AMI
+  //
+  if (config.ami?.amiId) {
+
+    return ec2.MachineImage.genericLinux({
+      [region]: config.ami.amiId
+    });
+
+  }
+
+  //
+  // AMI from SSM Parameter
+  //
+  if (config.ami?.ssmParameterName) {
+
+    return ec2.MachineImage.fromSsmParameter(
+      config.ami.ssmParameterName
+    );
+
+  }
+
+  //
+  // Operating System
+  //
+  switch (config.ami?.operatingSystem) {
+
+    case 'amazon-linux-2':
+      return ec2.MachineImage.latestAmazonLinux2();
+
+    case 'amazon-linux-2023':
+    default:
+      return ec2.MachineImage.latestAmazonLinux2023();
+
+  }
+}
 }

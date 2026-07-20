@@ -41,6 +41,7 @@ export interface DataVolumeConfiguration {
   size: number;
   volumeType: ec2.EbsDeviceVolumeType;
   encrypted?: boolean;
+  deleteOnTermination?: boolean;
   iops?: number;
   throughput?: number;
 }
@@ -51,8 +52,23 @@ export interface Ec2Configuration {
   rootVolume: RootVolumeConfiguration;
   dataVolumes?: DataVolumeConfiguration[];
   enableDetailedMonitoring?: boolean;
+  
+    /**
+   * Optional subnet type.
+   */
+  subnetType?:
+    | 'PUBLIC'
+    | 'PRIVATE_WITH_EGRESS'
+    | 'PRIVATE_ISOLATED';
+
+  /**
+   * Optional suffix for resource naming.
+   */
+  nameSuffix?: string;
+
   tags?: Record<string, string>;
 }
+
 
 const MIN_ROOT_VOLUME_SIZE_GB = 8;
 const MIN_DATA_VOLUME_SIZE_GB = 8;
@@ -108,7 +124,8 @@ export function normalizeEc2Configuration(config: Partial<Ec2Configuration>): Ec
       deviceName: dataVolume.deviceName,
       size: dataVolume.size,
       volumeType: dataVolume.volumeType,
-      encrypted: dataVolume.encrypted ?? true,
+      encrypted: dataVolume.encrypted ?? true,    
+      deleteOnTermination: dataVolume.deleteOnTermination ?? true,  
       iops: dataVolume.iops,
       throughput: dataVolume.throughput,
     };
@@ -130,13 +147,19 @@ export function normalizeEc2Configuration(config: Partial<Ec2Configuration>): Ec
   });
 
   return {
-    instanceType: config.instanceType,
-    ami: config.ami,
-    rootVolume,
-    dataVolumes,
-    enableDetailedMonitoring: config.enableDetailedMonitoring ?? false,
-    tags: config.tags ?? {},
-  };
+  instanceType: config.instanceType,
+  ami: config.ami,
+  rootVolume,
+  dataVolumes,
+  enableDetailedMonitoring:
+    config.enableDetailedMonitoring ?? false,
+  subnetType:
+    config.subnetType ?? 'PRIVATE_WITH_EGRESS',
+  nameSuffix:
+    config.nameSuffix,
+  tags:
+    config.tags ?? {}
+   };
 }
 
 export function isEc2ConfigurationReusable(

@@ -100,7 +100,7 @@ class Ec2Construct extends constructs_1.Construct {
             // Version 2:
             // Replace with AmiResolver.resolve(props.ec2)
             //
-            machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+            machineImage: this.resolveMachineImage(props.ec2, props.config.region),
             vpcSubnets: {
                 subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS
             },
@@ -115,6 +115,35 @@ class Ec2Construct extends constructs_1.Construct {
             Name: instanceName,
             ResourceType: 'EC2'
         });
+    }
+    /**
+   * Resolve machine image from configuration.
+   */
+    resolveMachineImage(config, region) {
+        //
+        // Specific AMI
+        //
+        if (config.ami?.amiId) {
+            return ec2.MachineImage.genericLinux({
+                [region]: config.ami.amiId
+            });
+        }
+        //
+        // AMI from SSM Parameter
+        //
+        if (config.ami?.ssmParameterName) {
+            return ec2.MachineImage.fromSsmParameter(config.ami.ssmParameterName);
+        }
+        //
+        // Operating System
+        //
+        switch (config.ami?.operatingSystem) {
+            case 'amazon-linux-2':
+                return ec2.MachineImage.latestAmazonLinux2();
+            case 'amazon-linux-2023':
+            default:
+                return ec2.MachineImage.latestAmazonLinux2023();
+        }
     }
 }
 exports.Ec2Construct = Ec2Construct;

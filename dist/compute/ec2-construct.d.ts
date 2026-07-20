@@ -13,4 +13,8 @@ export interface Ec2ConstructProps {
 export declare class Ec2Construct extends Construct {
     readonly instance: ec2.Instance;
     constructor(scope: Construct, id: string, props: Ec2ConstructProps);
+    /**
+   * Resolve machine image from configuration.
+   */
+    private resolveMachineImage;
 }
