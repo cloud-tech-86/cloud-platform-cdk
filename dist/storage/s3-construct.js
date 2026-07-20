@@ -39,52 +39,65 @@ const s3 = __importStar(require("aws-cdk-lib/aws-s3"));
 const constructs_1 = require("constructs");
 const naming_construct_1 = require("../foundation/naming-construct");
 const resource_types_1 = require("../constants/resource-types");
+const __1 = require("..");
 class S3Construct extends constructs_1.Construct {
     bucket;
     constructor(scope, id, props) {
         super(scope, id);
         const naming = new naming_construct_1.NamingConstruct(props.config);
-        const bucketName = naming.generate(resource_types_1.ResourceType.S3, { suffix: props.bucketSuffix ?? 'data' });
+        const bucketName = naming.generate(resource_types_1.ResourceType.S3, { suffix: props.s3.bucketSuffix ?? 'data' });
         this.bucket = new s3.Bucket(this, 'Bucket', {
             bucketName,
-            versioned: true,
-            encryption: props.kmsKey
-                ? s3.BucketEncryption.KMS
-                : s3.BucketEncryption.S3_MANAGED,
-            encryptionKey: props.kmsKey,
-            blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-            enforceSSL: true,
+            versioned: props.s3.versioned,
+            encryption: props.s3.encryptionEnabled
+                ? (props.kmsKey
+                    ? s3.BucketEncryption.KMS
+                    : s3.BucketEncryption.S3_MANAGED)
+                : s3.BucketEncryption.UNENCRYPTED,
+            blockPublicAccess: props.s3.blockPublicAccess
+                ? s3.BlockPublicAccess.BLOCK_ALL
+                : undefined,
+            enforceSSL: props.s3.enforceSSL,
             removalPolicy: props.config.environment === 'prod'
                 ? aws_cdk_lib_1.RemovalPolicy.RETAIN
                 : aws_cdk_lib_1.RemovalPolicy.DESTROY,
             autoDeleteObjects: props.config.environment !== 'prod',
-            lifecycleRules: [
-                {
-                    id: 'CostOptimization',
-                    enabled: true,
-                    transitions: [
-                        {
-                            storageClass: s3.StorageClass.INFREQUENT_ACCESS,
-                            transitionAfter: aws_cdk_lib_1.Duration.days(30)
-                        },
-                        {
-                            storageClass: s3.StorageClass.GLACIER,
-                            transitionAfter: aws_cdk_lib_1.Duration.days(90)
-                        }
-                    ],
-                    expiration: aws_cdk_lib_1.Duration.days(365)
-                }
-            ]
+            lifecycleRules: this.buildLifecycleRules(props.s3.lifecycleRules),
         });
         // Standard Tags
-        aws_cdk_lib_1.Tags.of(this.bucket).add('Application', props.config.application);
-        aws_cdk_lib_1.Tags.of(this.bucket).add('Environment', props.config.environment);
-        aws_cdk_lib_1.Tags.of(this.bucket).add('Owner', props.config.owner);
-        aws_cdk_lib_1.Tags.of(this.bucket).add('CostCenter', props.config.costCenter);
-        aws_cdk_lib_1.Tags.of(this.bucket).add('AutoCleanup', props.config.environment === 'prod'
-            ? 'False'
-            : 'True');
-        aws_cdk_lib_1.Tags.of(this.bucket).add('CleanupAfterDays', '365');
+        __1.TaggingConstruct.applyTags(this.bucket, props.config, props.s3.tags);
+    }
+    /**
+   * Build S3 lifecycle rules from configuration.
+   */
+    buildLifecycleRules(rules) {
+        if (!rules || rules.length === 0) {
+            return undefined;
+        }
+        return rules.map(rule => ({
+            id: rule.id,
+            enabled: rule.enabled ?? true,
+            expiration: rule.expirationDays
+                ? aws_cdk_lib_1.Duration.days(rule.expirationDays)
+                : undefined,
+            transitions: [
+                ...(rule.transitionToIaDays
+                    ? [{
+                            storageClass: s3.StorageClass.INFREQUENT_ACCESS,
+                            transitionAfter: aws_cdk_lib_1.Duration.days(rule.transitionToIaDays)
+                        }]
+                    : []),
+                ...(rule.transitionToGlacierDays
+                    ? [{
+                            storageClass: s3.StorageClass.GLACIER,
+                            transitionAfter: aws_cdk_lib_1.Duration.days(rule.transitionToGlacierDays)
+                        }]
+                    : [])
+            ],
+            abortIncompleteMultipartUploadAfter: rule.abortIncompleteMultipartUploadAfterDays
+                ? aws_cdk_lib_1.Duration.days(rule.abortIncompleteMultipartUploadAfterDays)
+                : undefined
+        }));
     }
 }
 exports.S3Construct = S3Construct;
